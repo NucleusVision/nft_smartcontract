@@ -20,6 +20,8 @@ contract NitroCollection is
     using Strings for uint256;
 
     Counters.Counter private _tokenIdCounter;
+
+    // To maintain tier
     uint256 public tier;
 
     // Mapping to TokenURIs
@@ -36,8 +38,10 @@ contract NitroCollection is
 
     string private _baseURIextended;
     address public beneficiary;
+    address public teller;
 
     event BeneficiaryUpdated(address oldBeneficiary, address newBeneficiary);
+    event TellerUpdated(address oldTeller, address newTeller);
     event SignerUpdated(address oldBeneficiary, address newBeneficiary);
     event AllowedERC20Updated(address erc20, bool status, uint256 when);
     event UpdatedERC20Price(address erc20, uint256 price, uint256 when);
@@ -45,6 +49,15 @@ contract NitroCollection is
         address erc20,
         uint256 price,
         address who,
+        address to,
+        uint256 when,
+        uint256 tier
+    );
+    event PendingPaid(
+        address erc20,
+        uint256 price,
+        address who,
+        address to,
         uint256 when,
         uint256 tier
     );
@@ -52,33 +65,35 @@ contract NitroCollection is
     event OperatorMinted(address operator, address to, uint256 when);
 
     constructor(
-        address _usdt,
         address _usdc,
         address _dai,
         uint256 _tier,
         uint256 _price,
         string memory _URI,
-        address _beneficiary
+        address _beneficiary,
+        address _teller
     ) ERC721("NPass", "NPass") {
-        require(_usdt != address(0), "Initiate:: Invalid USDT Address");
         require(_usdc != address(0), "Initiate:: Invalid USDC Address");
         require(_dai != address(0), "Initiate:: Invalid DAI Address");
-        require(_beneficiary != address(0), "Initiate:: Invalid Beneficiary Address");
         require(_tier > 0, "Initiate:: Tier can not be Zero");
         require(_price > 0, "Initiate:: Price can not be Zero");
+        require(
+            _beneficiary != address(0),
+            "Initiate:: Invalid Beneficiary Address"
+        );
+        require(_teller != address(0), "Initiate:: Invalid Teller Address");
         tier = _tier;
         _baseURIextended = _URI;
         beneficiary = _beneficiary;
-        allowedERC20[_usdt] = true;
+        teller = _teller;
         allowedERC20[_usdc] = true;
         allowedERC20[_dai] = true;
-        erc20Price[_usdt] = _price * 10**6; // USDT
         erc20Price[_usdc] = _price * 10**6; // USDC
         erc20Price[_dai] = _price * 10**18; // DAI
     }
 
     function updateERC20(address _erc20, bool _status) public onlyOwner {
-        require(_erc20 != address(0), "UpdateOperator:: Invalid Address");
+        require(_erc20 != address(0), "UpdateERC20:: Invalid Address");
         allowedERC20[_erc20] = _status;
         emit AllowedERC20Updated(_erc20, _status, block.timestamp);
     }
@@ -99,8 +114,8 @@ contract NitroCollection is
         emit UpdatedERC20Price(_erc20, _price, block.timestamp);
     }
 
-    function pay(address _erc20) external {
-        require(_erc20 != address(0), "SuperMint:: Invalid Address");
+    function pay(address _erc20) external nonReentrant {
+        require(_erc20 != address(0), "Pay:: Invalid Address");
         require(allowedERC20[_erc20], "Pay:: Unsupported ERC20");
         uint256 _toPay = erc20Price[_erc20];
         require(
@@ -108,11 +123,18 @@ contract NitroCollection is
             "Pay:: Insufficient Balance"
         );
         require(
-            transferERC20(_erc20, _toPay) == true,
-            "Mint:: Transfer Failed"
+            transferERC20(_erc20, beneficiary, _toPay),
+            "Pay:: Transfer Failed"
         );
         safeMint(msg.sender);
-        emit Paid(_erc20, _toPay, msg.sender, block.timestamp, tier);
+        emit Paid(
+            _erc20,
+            _toPay,
+            msg.sender,
+            beneficiary,
+            block.timestamp,
+            tier
+        );
     }
 
     modifier onlyOperator() {
@@ -120,17 +142,37 @@ contract NitroCollection is
         _;
     }
 
-    function superMint(address _to) public onlyOperator {
+    function superMint(address _to) public onlyOperator nonReentrant {
         require(_to != address(0), "SuperMint:: _to can not be zero address");
         safeMint(_to);
         emit OperatorMinted(msg.sender, _to, block.timestamp);
     }
 
-    function transferERC20(address _erc20, uint256 _toPay)
-        internal
-        returns (bool)
-    {
-        return IERC20(_erc20).transferFrom(msg.sender, beneficiary, _toPay);
+    function transferERC20(
+        address _erc20,
+        address _recipient,
+        uint256 _toPay
+    ) internal returns (bool) {
+        return IERC20(_erc20).transferFrom(msg.sender, _recipient, _toPay);
+    }
+
+    function payPending(address _erc20, uint256 _toPay) external nonReentrant {
+        require(
+            IERC20(_erc20).balanceOf(msg.sender) >= _toPay,
+            "PayPending:: Insufficient Balance"
+        );
+        require(
+            transferERC20(_erc20, teller, _toPay),
+            "PayPending:: Transfer Failed"
+        );
+        emit PendingPaid(
+            _erc20,
+            _toPay,
+            msg.sender,
+            teller,
+            block.timestamp,
+            tier
+        );
     }
 
     function safeMint(address _to) internal {
@@ -206,5 +248,15 @@ contract NitroCollection is
         address _oldBeneficiary = beneficiary;
         beneficiary = _newBeneficiary;
         emit BeneficiaryUpdated(_oldBeneficiary, _newBeneficiary);
+    }
+
+    function updateTeller(address payable _newTeller) external onlyOwner {
+        require(
+            _newTeller != address(0),
+            "updateTeller:: New Teller can not be Zero Address"
+        );
+        address _oldTeller = teller;
+        teller = _newTeller;
+        emit TellerUpdated(_oldTeller, _newTeller);
     }
 }
