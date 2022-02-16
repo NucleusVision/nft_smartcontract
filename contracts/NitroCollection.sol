@@ -92,19 +92,22 @@ contract NitroCollection is
         erc20Price[_dai] = _price * 10**18; // DAI
     }
 
-    function updateERC20(address _erc20, bool _status) public onlyOwner {
+    function updateERC20(address _erc20, bool _status) external onlyOwner {
         require(_erc20 != address(0), "UpdateERC20:: Invalid Address");
         allowedERC20[_erc20] = _status;
         emit AllowedERC20Updated(_erc20, _status, block.timestamp);
     }
 
-    function updateOperator(address _operator, bool _status) public onlyOwner {
+    function updateOperator(address _operator, bool _status)
+        external
+        onlyOwner
+    {
         require(_operator != address(0), "UpdateOperator:: Invalid Address");
         operators[_operator] = _status;
         emit OperatorUpdated(_operator, _status, block.timestamp);
     }
 
-    function updatePrice(address _erc20, uint256 _price) public onlyOwner {
+    function updatePrice(address _erc20, uint256 _price) external onlyOwner {
         require(_erc20 != address(0), "UpdatePrice:: Invalid Address");
         require(
             allowedERC20[_erc20],
@@ -142,7 +145,7 @@ contract NitroCollection is
         _;
     }
 
-    function superMint(address _to) public onlyOperator nonReentrant {
+    function superMint(address _to) external onlyOperator nonReentrant {
         require(_to != address(0), "SuperMint:: _to can not be zero address");
         safeMint(_to);
         emit OperatorMinted(msg.sender, _to, block.timestamp);
@@ -198,7 +201,7 @@ contract NitroCollection is
         return super.supportsInterface(interfaceId);
     }
 
-    function setBaseURI(string memory baseURI_) public onlyOwner {
+    function setBaseURI(string memory baseURI_) external onlyOwner {
         _baseURIextended = baseURI_;
     }
 
@@ -233,7 +236,7 @@ contract NitroCollection is
         return string(abi.encodePacked(base, tokenId.toString()));
     }
 
-    function tokenExists(uint256 tokenId) public view returns (bool) {
+    function tokenExists(uint256 tokenId) external view returns (bool) {
         return (_exists(tokenId));
     }
 
