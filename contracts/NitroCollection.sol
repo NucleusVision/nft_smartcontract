@@ -72,7 +72,7 @@ contract NitroCollection is
         string memory _URI,
         address _beneficiary,
         address _teller
-    ) ERC721("NPass", "NPass") {
+    ) ERC721("Nitro Network", "Top") {
         require(_usdc != address(0), "Initiate:: Invalid USDC Address");
         require(_dai != address(0), "Initiate:: Invalid DAI Address");
         require(_tier > 0, "Initiate:: Tier can not be Zero");

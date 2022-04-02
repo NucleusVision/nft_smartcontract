@@ -1,16 +1,17 @@
-# Nitro Network Smart Contracts
+# Nitro Network NFM Avalanche Smart Contracts
 
-#### Tier-1
+#### Iconic
 ```
-https://rinkeby.etherscan.io/address/0x38f8374cf5bf61afac4d519a9512dee53a611caf
-```
+https://snowtrace.io/address/0x8FE9d8495f09e9EAD5eA9e59a1742c346F271346#code
 
-#### Tier-2
-```
-https://rinkeby.etherscan.io/address/0x8ed8bcc9601e0a5b113fa00c9aB8ef72b3e4bcE7
 ```
 
-#### Tier-3
+#### Premium
 ```
-https://rinkeby.etherscan.io/address/0x2B9f18d7C6c68368bE669c9d5072698f92e816E5
+https://snowtrace.io/address/0x757B7f7a0B57aeE1Cb3EE39a249c997754DD019c#code
+```
+
+#### Top
+```
+https://snowtrace.io/address/0x87a7ce85788577979be832818444a87bd09e2a44#code
 ```

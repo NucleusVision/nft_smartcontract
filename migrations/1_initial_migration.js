@@ -1,16 +1,36 @@
-const Migrations = artifacts.require("Migrations");
 const NitroCollection = artifacts.require("NitroCollection");
 
-module.exports = function (deployer) {
-  deployer.deploy(Migrations);
-  deployer.deploy(
+module.exports = async function (deployer) {
+  await deployer.deploy(
     NitroCollection,
-    "0xC7D928ce79B872BebBefbEa62b56663Ad08A4012",
-    "0x46115978B77B9D20E9e1A9Ed74E12CA8C0fA8E3A",
+    "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+    "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
     1,
-    "450",
+    "750",
     "#",
-    "0x4d09c1eBa78c6f8EC4bB443F949118C9c5C2ad3B",
-    "0x4d09c1eBa78c6f8EC4bB443F949118C9c5C2ad3B"
+    "0x13F6CaB2FFe949715467AD4C4D2D2A9cC2F2b982",
+    "0x13F6CaB2FFe949715467AD4C4D2D2A9cC2F2b982"
+  );
+
+  await deployer.deploy(
+    NitroCollection,
+    "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+    "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+    2,
+    "650",
+    "#",
+    "0x13F6CaB2FFe949715467AD4C4D2D2A9cC2F2b982",
+    "0x13F6CaB2FFe949715467AD4C4D2D2A9cC2F2b982"
+  );
+
+  await deployer.deploy(
+    NitroCollection,
+    "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+    "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+    3,
+    "550",
+    "#",
+    "0x13F6CaB2FFe949715467AD4C4D2D2A9cC2F2b982",
+    "0x13F6CaB2FFe949715467AD4C4D2D2A9cC2F2b982"
   );
 };

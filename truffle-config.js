@@ -35,6 +35,22 @@ module.exports = {
       timeoutBlocks: 50, // # of blocks before a deployment times out  (minimum/default: 50)
       websockets: false,
     },
+    avalanchetest: {
+      provider: () => new HDWalletProvider(privateKey, `https://api.avax-test.network/ext/bc/C/rpc`),
+      network_id: 43113,
+      confirmations: 0, // # of confs to wait between deployments. (default: 0)
+      timeoutBlocks: 50, // # of blocks before a deployment times out  (minimum/default: 50)
+      websockets: false,
+      gasPrice: 225000000000,
+    },
+    avalancheProd: {
+      provider: () => new HDWalletProvider(privateKey, `https://api.avax.network/ext/bc/C/rpc`),
+      network_id: 43114,
+      confirmations: 0, // # of confs to wait between deployments. (default: 0)
+      timeoutBlocks: 50, // # of blocks before a deployment times out  (minimum/default: 50)
+      websockets: false,
+      gasPrice: 225000000000,
+    },
   },
 
   // Set default mocha options here, use special reporters etc.
@@ -61,6 +77,7 @@ module.exports = {
   api_keys: {
     bscscan: process.env.BSCSCAN_API,
     etherscan: process.env.ETHERSCAN_API,
-    polygonscan: process.env.POLYSCAN_API
+    polygonscan: process.env.POLYSCAN_API,
+    snowtrace: process.env.AVALANCHE_API
   },
 };
