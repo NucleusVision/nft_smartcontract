@@ -151,6 +151,25 @@ contract NitroCollection is
         emit OperatorMinted(msg.sender, _to, block.timestamp);
     }
 
+    function bulkMint(address[] memory _recipients)
+        external
+        onlyOperator
+        nonReentrant
+    {
+        require(
+            _recipients.length > 0,
+            "BulkMint:: _recipients length != amounts length"
+        );
+        for (uint64 i = 0; i < _recipients.length; i++) {
+            require(
+                _recipients[i] != address(0),
+                "BulkMint:: _recipients can not be zero address"
+            );
+            safeMint(_recipients[i]);
+            emit OperatorMinted(msg.sender, _recipients[i], block.timestamp);
+        }
+    }
+
     function transferERC20(
         address _erc20,
         address _recipient,
